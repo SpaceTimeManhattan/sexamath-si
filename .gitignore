@@ -1,0 +1,7 @@
+_capture/
+_old/
+_cap.html
+preview/sexamath_animation_with_jered_intro.mp4
+**/node_modules/
+*.log
+.DS_Store

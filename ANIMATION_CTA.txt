@@ -1,0 +1,5 @@
+WATCH: Two spacecraft, one discarded signal.
+MESSENGER orbited Mercury 2011–2015. BepiColombo arrives 21 Nov 2026.
+SEXA Math proposes keeping belt-puncture telemetry — before, during, after — and reading it with six HEXAD channels.
+Spike → brief radiation match → puncture with five outsiders → keep inside data → exit drop → solve across before / during / after.
+Read the backdrop paper: RICOLMC-DDF · https://doi.org/10.17605/OSF.IO/WNV67

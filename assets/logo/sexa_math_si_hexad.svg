@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480">
+  <rect width="1200" height="480" fill="#0a1628"/>
+  <g transform="translate(220,240)">
+    <polygon points="0,-90 78,-45 78,45 0,90 -78,45 -78,-45" fill="none" stroke="#d4af37" stroke-width="4"/>
+    <circle cx="0" cy="-90" r="8" fill="#3fd0e0"/>
+    <circle cx="78" cy="-45" r="8" fill="#3fd0e0"/>
+    <circle cx="78" cy="45" r="8" fill="#3fd0e0"/>
+    <circle cx="0" cy="90" r="8" fill="#3fd0e0"/>
+    <circle cx="-78" cy="45" r="8" fill="#3fd0e0"/>
+    <circle cx="-78" cy="-45" r="8" fill="#3fd0e0"/>
+  </g>
+  <text x="720" y="200" text-anchor="middle" font-family="Georgia, serif" font-size="72" font-weight="700" fill="#d4af37" letter-spacing="6">SEXA MATH SI</text>
+  <text x="720" y="260" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="26" fill="#3fd0e0" letter-spacing="3">SUPER INTELLIGENCE POWERED</text>
+  <text x="720" y="310" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" fill="#e6e9ef">UFS Technology Development and Deployment</text>
+</svg>

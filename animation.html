@@ -1,0 +1,209 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEXAMATH.si — Two spacecraft, one discarded signal</title>
+<!--
+  SEXAMATH.si flagship animation · Unified Field Systems LLC · draft 2026-11-03
+  Follows ANIMATION_BRIEF.md 13-shot storyboard (~6:30). Captions-first; British VO locked (en-GB-SoniaNeural).
+  OPEN (Jered): music · site placement (standalone page + nav link for now). VO: assets/vo/sexamath_animation_vo_en_GB.mp3 (~392s, full transcript).
+  WORDING LOCKED: radiation belts on all six HEXAD planets (some on/off; synthetic). Do not soften to energetic-particle-only.
+  Error construct LOCKED: The Trash Telemetry Fallacy.
+  Orbits/magnetosphere are schematic: illustrative, not to scale. Craft = real NASA/ESA imagery, see assets/craft/CREDITS.md.
+-->
+<style>
+:root{--bg:#0a1628;--gold:#d4af37;--cyan:#3fd0e0;--tx:#e6e9ef}
+html,body{margin:0;background:#050b16;color:var(--tx);font-family:Inter,system-ui,sans-serif}
+.stage{max-width:1280px;margin:1rem auto;padding:0 1rem}
+canvas{width:100%;aspect-ratio:16/9;display:block;background:var(--bg);border:1px solid #1e2a44;border-radius:6px}
+.ctl{display:flex;gap:.6rem;align-items:center;margin:.6rem 0;font-size:.85rem;color:#8b95a8}
+button{background:none;border:1px solid var(--gold);color:var(--gold);padding:.4rem .9rem;border-radius:4px;cursor:pointer}
+input[type=range]{flex:1;accent-color:var(--gold)}a{color:var(--gold)}
+.panel{border:1px dashed #2a3a5c;border-radius:6px;padding:1rem 1.2rem;margin:1rem 0}.panel h3{margin:.2rem 0;color:var(--gold);font-family:Georgia,serif;font-weight:normal}
+</style></head><body>
+<div class="stage">
+<p><a href="index.html">← sexamath.si</a></p>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="ctl"><button id="pp">Pause</button><button id="rs">Restart</button><button id="mu" type="button" title="Mute">Mute</button><input id="sk" type="range" min="0" max="400.6" step="0.1" value="0"><span id="tm">0:00</span></div>
+<audio id="vo" src="assets/vo/sexamath_animation_vo_en_GB.mp3" preload="auto"></audio>
+<p style="font-size:.8rem;color:#8b95a8">Orbits and magnetosphere: illustrative, not to scale. Spacecraft imagery: NASA, NASA/JHU-APL/CIW, ESA (CC BY-SA 3.0 IGO) — <a href="assets/craft/CREDITS.md">credits</a>. BepiColombo dates per ESA as of 3 Nov 2026; ESA notes dates may change. SEXA Math is a proposed research program of Unified Field Systems LLC. UFS public scoreboard 6.75 / 19 (35.5% toward solving gravity) — 19 criteria, no credit above 0.5 yet; #18 held-out and #19 beats-null are FAIL. <a href="index.html#scoreboard">Full 19-item scoreboard</a>.</p>
+<div class="panel" id="desk"><h3>Coming: daily SEXA telemetry desk</h3>
+<p>A daily-login desk where people view live satellite telemetry readings and run SEXA alongside them in real time — before, during, after. Not built yet.</p>
+<!-- STUB · future telemetry desk: auth (daily login) · telemetry feed adapters (PDS/PSA archives, mission QL) · SEXA admissibility-gate runner · per-user session log. No auth or data plumbing exists yet. -->
+</div></div>
+<script>
+const WORDING={region:"radiation belt"}; // Jered lock: radiation belts on all six HEXAD planets, some on/off; Mercury shown as transient/on-off
+const FALLACY="The Trash Telemetry Fallacy";
+const DEF="SEXA Math: a synthetic, admissibility-gated algebraic calculus that treats radiation-belt puncture telemetry — before, during, and after — as signal, upgrades quaternion sensing to HEXAD, and turns artificial gravity into a solvable number system.";
+const C=document.getElementById('c'),X=C.getContext('2d'),W=1920,H=1080,T=400.6;
+const G='#d4af37',CY='#3fd0e0',NV='#0a1628',TX='#e6e9ef';
+const img=s=>{const i=new Image();i.src=s;return i};
+const M=img('assets/craft/messenger_model.png'),B=img('assets/craft/bepi_model.png'),MP=img('assets/craft/messenger_at_mercury.jpg'),BS=img('assets/craft/bepi_stack_esa.jpg');
+const stars=[...Array(260)].map(()=>[Math.random()*W,Math.random()*H,Math.random()*1.6+.3,Math.random()]);
+const cl=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),ss=(a,b,t)=>{t=cl((t-a)/(b-a));return t*t*(3-2*t)};
+const win=(t,a,b,f=.8)=>Math.min(ss(a,a+f,t),1-ss(b-f,b,t));
+function txt(s,x,y,sz,col=TX,al='center',font='Inter',w=600){X.font=`${w} ${sz}px ${font},Georgia,serif`;X.fillStyle=col;X.textAlign=al;X.fillText(s,x,y)}
+function wrap(s,x,y,sz,mw,col=TX,font='Inter',lh=1.35){X.font=`500 ${sz}px ${font},Georgia,serif`;let ws=s.split(' '),l='',ys=y;for(const w of ws){if(X.measureText(l+w).width>mw&&l){txt(l.trim(),x,ys,sz,col,'center',font,500);l='';ys+=sz*lh}l+=w+' '}txt(l.trim(),x,ys,sz,col,'center',font,500);return ys}
+function cap(lines,a){X.globalAlpha=a;X.fillStyle='rgba(5,11,22,.78)';X.fillRect(0,H-170,W,170);lines.forEach((l,i)=>txt(l,W/2,H-105+i*52,38,i?'#b8c0d0':TX));X.globalAlpha=1}
+function tag(s){txt(s,W-40,50,22,'#6f7a90','right','Inter',500)}
+function sprite(im,x,y,h,rot=0){if(!im.complete||!im.naturalWidth)return;const w=h*im.naturalWidth/im.naturalHeight;X.save();X.translate(x,y);X.rotate(rot);X.drawImage(im,-w/2,-h/2,w,h);X.restore()}
+function disc(x,y,r,col,glow){X.beginPath();X.arc(x,y,r,0,7);X.fillStyle=col;if(glow){X.shadowColor=col;X.shadowBlur=glow}X.fill();X.shadowBlur=0}
+function ring(cx,cy,r,col,a=.35){X.strokeStyle=col;X.globalAlpha=a;X.lineWidth=2;X.beginPath();X.arc(cx,cy,r,0,7);X.stroke();X.globalAlpha=1}
+function bg(t){X.fillStyle=NV;X.fillRect(0,0,W,H);for(const s of stars){X.globalAlpha=.3+.5*Math.abs(Math.sin(t*.7+s[3]*9));X.fillStyle=s[3]>.8?CY:'#fff';X.fillRect(s[0],s[1],s[2],s[2])}X.globalAlpha=1}
+// inner solar system schematic
+const SUN=[760,560],R={Me:130,V:240,E:340};
+function solar(t,list){disc(...SUN,26,G,40);for(const k in R)ring(...SUN,R[k],'#8b95a8',.25);
+ const ang={Me:t*1.1,V:t*.45+2,E:t*.28+4};const P={};for(const k in R){P[k]=[SUN[0]+R[k]*Math.cos(ang[k]),SUN[1]+R[k]*Math.sin(ang[k])];disc(...P[k],k=='E'?11:k=='V'?10:7,k=='E'?'#4a8fd8':k=='V'?'#d9b77a':'#a9a29a');txt({Me:'Mercury',V:'Venus',E:'Earth'}[k],P[k][0],P[k][1]-20,20,'#9aa3b5')}
+ txt('illustrative, not to scale',40,H-190,20,'#6f7a90','left','Inter',500);return P}
+function flybyList(items,p,x0,y0,col){items.forEach((s,i)=>{const a=cl(p*items.length-i);X.globalAlpha=a;disc(x0,y0+i*54-8,7,col,a>0.99?12:0);txt(s,x0+24,y0+i*54,28,TX,'left','Inter',500)});X.globalAlpha=1}
+function spiral(p,col,turns=2.6){X.strokeStyle=col;X.lineWidth=3;X.setLineDash([10,8]);X.beginPath();for(let i=0;i<=p*300;i++){const u=i/300,r=R.E-(R.E-R.Me)*u,a=4+u*turns*6.283;const x=SUN[0]+r*Math.cos(a),y=SUN[1]+r*Math.sin(a);i?X.lineTo(x,y):X.moveTo(x,y)}X.stroke();X.setLineDash([]);const u=p,r=R.E-(R.E-R.Me)*u,a=4+u*turns*6.283;return[SUN[0]+r*Math.cos(a),SUN[1]+r*Math.sin(a)]}
+// telemetry traces for HEXAD teach
+function trace(x,y,w,h,k,t,inside,keepAll){X.strokeStyle=inside?CY:G;X.lineWidth=2.5;X.beginPath();for(let i=0;i<=w;i+=3){const u=i/w;let v=Math.sin(u*40+k*3)*.08+Math.sin(u*97+k)*.04;if(u>.3&&u<.36)v+=.55;if(inside&&u>.36&&u<.7)v+=.75+Math.sin(u*120)*.08;if(!inside&&u>.36&&u<.7)v+=.12;if(u>.7)v*=.6;if(u>t)break;i?X.lineTo(x+i,y-v*h):X.moveTo(x+i,y-v*h)}X.stroke()}
+function hexad(cx,cy,r,states,lab=true){for(let i=0;i<6;i++){const a=-Math.PI/2+i*Math.PI/3,x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);X.strokeStyle='#2a3a5c';X.lineWidth=2;X.beginPath();X.moveTo(cx,cy);X.lineTo(x,y);X.stroke();disc(x,y,16,states[i]?CY:G,states[i]?24:6);if(lab)txt('H'+(i+1),x,y+46,18,'#9aa3b5')}}
+function oldFrame(t){let a;
+// 2-5 MESSENGER
+if(t>=5.5&&t<41){a=win(t,5.5,41,1);X.globalAlpha=a;const P=solar(t*.3,1);tag('ACT I · MESSENGER (NASA / JHU-APL)');
+ if(t<14.5){const p=ss(7,14,t);sprite(M,P.E[0]+40+p*30,P.E[1]-60-p*40,120);sprite(M,1500,420,460,Math.sin(t*.4)*.08);cap(['MESSENGER · launched 3 Aug 2004 (NASA/JHU-APL)'],win(t,6,14.5))}
+ else if(t<22.5){const p=ss(14.5,22,t),q=spiral(p,G);sprite(M,q[0],q[1],80);flybyList(['Earth · Aug 2005','Venus · Oct 2006','Venus · Jun 2007','Mercury · Jan 2008','Mercury · Oct 2008','Mercury · Sep 2009'],p,1300,300,G);cap(['Six planetary flybys to brake into Mercury'],win(t,14.5,22.5))}
+ else {X.fillStyle='rgba(10,22,40,.92)';X.fillRect(0,0,W,H-170);const cx=760,cy=520;disc(cx,cy,170,'#8f8a84');
+  // high-eccentricity polar orbit, periapsis over north
+  X.strokeStyle=G;X.lineWidth=2;X.globalAlpha=a*.7;X.beginPath();X.ellipse(cx,cy-330,140,520,0,0,7);X.stroke();X.globalAlpha=a;
+  const ph=t*1.4,ox=cx+140*Math.sin(ph),oy=cy-330-520*Math.cos(ph);
+  if(t<30.5){sprite(M,ox,oy,70);txt('N',cx,cy-185,22,CY);cap(['Orbit insertion · 18 Mar 2011 (UTC) · first spacecraft to orbit Mercury','eccentric, near-polar orbit · lowest point over the north'],win(t,22.5,30.5))}
+  else{const p=ss(31,38,t);for(let i=0;i<60*p;i++){const la=(i%10)/10*Math.PI-Math.PI/2,lo=Math.floor(i/10);X.fillStyle='rgba(212,175,55,.25)';X.beginPath();X.arc(cx+170*Math.cos(la)*Math.sin(lo*.5-1.4),cy+170*Math.sin(la),14,0,7);X.fill()}
+   X.strokeStyle=G;X.strokeRect(1250,300,300,26);X.fillStyle=G;X.fillRect(1252,302,296*(1-p),22);txt('propellant',1400,290,20,'#9aa3b5');
+   const d=ss(36,38.5,t);if(d<1)sprite(M,cx+120-d*60,cy-330+d*160,70*(1-d*.5));else{disc(cx+60,cy-170,30*(1-ss(38.5,40.5,t))+4,'#fff',60)}
+   sprite(MP,1400,560,220);txt('MESSENGER (artist’s impression, NASA/JHU-APL/CIW)',1400,690,18,'#9aa3b5');
+   cap(['Mission ended 30 Apr 2015 — planned impact on Mercury’s surface. It is no longer operating.'],win(t,30.5,41))}}
+ X.globalAlpha=1}
+// 6-8 BepiColombo
+if(t>=40&&t<66){a=win(t,40,66,1);X.globalAlpha=a;tag('ACT II · BepiColombo (ESA + JAXA)');
+ if(t<48.5){X.globalAlpha=a*.35;sprite(M,520,480,380);X.globalAlpha=a;txt('MESSENGER · 2004–2015',520,760,28,'#9aa3b5');X.strokeStyle='#2a3a5c';X.beginPath();X.moveTo(W/2,150);X.lineTo(W/2,820);X.stroke();sprite(B,1400,470,420,Math.sin(t*.3)*.05);txt('BepiColombo · MPO + Mio + MTM',1400,760,28,CY);cap(['BepiColombo · ESA + JAXA · launched 20 Oct 2018'],win(t,40.5,48.5))}
+ else{const P=solar(t*.3);
+  if(t<56.5){const p=ss(48.5,56,t),q=spiral(p,CY,3.2);sprite(B,q[0],q[1],80);flybyList(['Earth · Apr 2020','Venus · Oct 2020','Venus · Aug 2021','Mercury · 1 Oct 2021','Mercury · 23 Jun 2022','Mercury · 19 Jun 2023','Mercury · 4 Sep 2024','Mercury · 1 Dec 2024','Mercury · 8 Jan 2025'],p,1300,220,CY);cap(['Nine planetary flybys · ~9.9 billion km'],win(t,48.5,56.5))}
+  else{const p=ss(56.5,63,t),mx=P.Me[0],my=P.Me[1];sprite(B,mx-160+p*100,my-110+p*60,110);X.globalAlpha=a*(1-p*.7);X.fillStyle='#8b95a8';X.fillRect(mx-260-p*80,my-170-p*40,40,26);X.globalAlpha=a;txt('MTM separated · 3 Sep 2026',mx-240-p*80,my-185-p*40,20,'#9aa3b5');
+   X.globalAlpha=a;X.fillStyle='rgba(5,11,22,.7)';X.fillRect(1240,220,560,420);sprite(BS,1520,380,250);txt('BepiColombo stack (credit: ESA)',1520,530,18,'#9aa3b5');txt('TODAY · 3 Nov 2026',1520,590,34,G,'center','Inter',700);txt('final approach — not yet in orbit',1520,628,22,'#b8c0d0');
+   cap(['Now: final approach · orbit insertion 21 Nov 2026 · two orbiters (MPO + Mio)','Mio separation 9–10 Dec 2026 · science from April 2027'],win(t,56.5,66))}}
+ X.globalAlpha=1}
+// 9 magnetosphere + fallacy
+if(t>=65&&t<76){a=win(t,65,76,1);X.globalAlpha=a;tag('ACT III · HEXAD TEACH');const cx=1000,cy=480;
+ for(let i=0;i<40;i++){const y=(i*53+t*0)%900,x=(i*97+t*260)%600;X.strokeStyle='rgba(255,220,150,.25)';X.beginPath();X.moveTo(x,y);X.lineTo(x+40,y);X.stroke()}
+ for(let k=1;k<6;k++){X.strokeStyle=CY;X.globalAlpha=a*(.15+.1*Math.sin(t*2+k));X.lineWidth=2;X.beginPath();X.ellipse(cx+k*30,cy,90+k*55,40+k*42,0,0,7);X.stroke()}
+ X.globalAlpha=a*(.25+.2*Math.sin(t*3));disc(cx+60,cy,150,'rgba(63,208,224,.35)');X.globalAlpha=a;disc(cx,cy,60,'#8f8a84');
+ txt(WORDING.region+' (synthetic; may switch on/off)',cx,cy+260,24,CY);txt('illustrative, not to scale',40,H-190,20,'#6f7a90','left','Inter',500);
+ cap(['Mercury carries a radiation belt (synthetic; may switch on/off). Crossings are usually trimmed as “noise.”',`For the gravity question, that discard is an error: ${FALLACY}.`],win(t,65.5,76));X.globalAlpha=1}
+// 10-12 HEXAD
+if(t>=75&&t<108){a=win(t,75,108,1);X.globalAlpha=a;tag('ACT III · HEXAD TEACH');txt('schematic belt transit · generic magnetized planet',40,H-190,20,'#6f7a90','left','Inter',500);
+ const prog=ss(76,104,t),bx=200+prog*1500,by=330;
+ X.fillStyle='rgba(63,208,224,.12)';X.fillRect(700,140,560,390);X.strokeStyle=CY;X.globalAlpha=a*.6;X.strokeRect(700,140,560,390);X.globalAlpha=a;txt(WORDING.region,980,128,22,CY);
+ const ins=t>85&&t<98, st=[t>81&&t<85||ins,0,0,0,0,0];sprite(B,bx,by,90);hexad(bx,by+150,60,st,false);
+ const labs=['BEFORE','DURING','AFTER'];
+ for(let k=0;k<6;k++){trace(200,640+k*40,1500,60,k,prog,k==0,true);txt('H'+(k+1),180,646+k*40,16,k==0?CY:G,'right')}
+ X.globalAlpha=a*.5;[[200,690],[700,560],[1260,440]].forEach(([x,w],i)=>{X.strokeStyle='#8b95a8';X.strokeRect(x,600,w,250);txt(labs[i],x+w/2,880,20,'#9aa3b5')});X.globalAlpha=a;
+ if(t>86&&t<98){X.strokeStyle=G;X.lineWidth=4;const ix=1650,iy=200;X.strokeRect(ix-25,iy-30,50,60);X.beginPath();X.moveTo(ix-45,iy-50);X.lineTo(ix+45,iy+50);X.stroke();txt('KEEP',ix,iy+70,22,G)}
+ if(t<86)cap(['1 · Spike    2 · Brief radiation match'],win(t,75.5,86));
+ else if(t<98)cap(['3 · Puncture with five outsiders    4 · Keep the inside data','one channel inside, five outside — that is why HEXAD needs six'],win(t,86,98));
+ else cap(['5 · Exit drop    6 · Solve across before / during / after'],win(t,98,108));X.globalAlpha=1}}
+const SB=[
+["Cassini γ","0.5","model γ − 1 = −9.26 × 10⁻⁶  ·  Cassini bound |γ − 1| ≲ 2.3 × 10⁻⁵ *"],
+["Shapiro delay","0.5","Δt = (1+γ)·(GM/c³)·ln(4r₁r₂/b²)  ·  model shift −1.2 ns *"],
+["Light deflection","0.5","θ = ((1+γ)/2)·4GM/(c²b) ≈ 1.75″ at the solar limb  ·  shift −8.1 µas *"],
+["Lunar laser ranging η","0.5","Nordtvedt η = 4β − γ − 3  ·  must sit near 0 *"],
+["Perihelion precession","0.25","Δω = 6πGM / (c²a(1 − e²))  ≈ 43″ per century (Mercury) *"],
+["Gravitational-wave speed","0.5","|v − c| / c  <  1 × 10⁻¹⁵ *"],
+["Tensor polarisations (2)","0.5","h₊ and h×  only — two tensor modes *"],
+["Scalar-mode limits","0.5","breathing mode h_b suppressed  ·  ω_BD ≳ 4 × 10⁴ *"],
+["Binary-pulsar dipole","0.5","dipole power ∝ (s₁ − s₂)²  →  must vanish *"],
+["Hulse–Taylor tensor decay","0.5","Ṗ_obs / Ṗ_GR ≈ 0.997 ± 0.002 *"],
+["Coupling rule — why 60⁻³","0.25","60⁻³ = 1 / 216 000 ≈ 4.63 × 10⁻⁶  ·  must be derived, not chosen"],
+["G derived","0.25","κ = G / 720  ·  G = 6.674 × 10⁻¹¹ m³ kg⁻¹ s⁻²  ·  currently tuned"],
+["Units consistent","0.25","[κ] · [field] · [source]  →  every term dimensionally matched"],
+["Unit ledger complete","0.25","every symbol ↦ SI unit, no orphans"],
+["Empire Wave value fixed and tested","0.25","value fixed a priori → then tested, never refit"],
+["Kinetic term exists","0.5","ℒ ⊃ ½ ∂_μφ ∂^μφ"],
+["Equation is an action","0.25","S = ∫ d⁴x √(−g) ℒ  ·  δS = 0 → field equations"],
+["Held-out tests pass","FAIL","fit set ≠ test set  ·  held-out score = 0"],
+["Beats random null — not numerology","FAIL","model vs random-permutation null  ·  score = 0"]];
+const IT=[221.06,226.88,232.76,238.74,245.29,251.53,258.11,265.10,271.47,277.92,284.68,292.24,301.22,307.43,313.76,321.03,327.71,334.24,338.79,344.35];
+const SC=c=>c=='FAIL'?0:+c;
+// new-time → old-time warp for Acts I–III
+const KN=[[76,5.5],[111.8,40.5],[134.8,65.5],[151.5,75.5],[153.4,77],[158.4,86],[166,98],[173,108]];
+function warp(t){for(let i=1;i<KN.length;i++)if(t<=KN[i][0]){const[a,b]=KN[i-1],[c,d]=KN[i];return b+(d-b)*(t-a)/(c-a)}return 108}
+const VS=img('assets/vesper/vesper_gravity_search_engine.png');
+const PL=[['Mercury','#a9a29a',11],['Earth','#4a8fd8',15],['Jupiter','#d8b48a',22],['Saturn','#e0c98a',19],['Uranus','#8fd8e0',16],['Neptune','#4a6fe0',16]];
+function planets(t,x0,y0,dx,a,sc=1){PL.forEach(([nm,cc,r],k)=>{r*=sc;const px=x0+k*dx,py=y0,on=(Math.floor(t*.8+k*1.7)%3)!=0;
+ for(let j=1;j<3;j++){X.strokeStyle=CY;X.globalAlpha=a*(on?.55/j:.08);X.lineWidth=2;X.beginPath();X.ellipse(px,py,r+10*j*sc,(r+10*j*sc)*.45,0,0,7);X.stroke()}X.globalAlpha=a;
+ disc(px,py,r,cc,on?14:0);txt(nm,px,py+50*sc,15*sc,'#9aa3b5');txt(on?'belt on':'belt off',px,py+68*sc,13*sc,on?CY:'#5a6478','center','Inter',500)})}
+function frameBody(t){let a;
+// 0 opener: SEXA Math + RICOLMC-DDF full name (0–21.7)
+if(t<22.5){a=win(t,0,22.5,1.2);X.globalAlpha=a;txt('SEXA MATH',W/2,300,150,G,'center','Cinzel',700);txt('sexamath.si · Unified Field Systems LLC',W/2,370,30,CY,'center','Inter',500);
+ X.globalAlpha=a*ss(RS-.5,RS+.5,t);txt('RICOLMC-DDF',W/2,480,64,G,'center','Cinzel',700);
+ wrap('Recursive Interdomain Computational Omni-Logic embedding Monster–Moonshine Constrained Admissibility Manifold Completeness across Density, Dimension, Field, Liquidity, and Recursive Resource Completeness for Γ-Gated Resource Flows',W/2,560,36,1500,TX,'Georgia');
+ X.globalAlpha=1;cap(['A synthetic, admissibility-gated algebraic calculus.'],win(t,.5,22.5))}
+// ACT 0 · Vespar component (21.7–76.2)
+if(t>=21.5&&t<76.5){a=win(t,21.5,76.5,1);X.globalAlpha=a;tag('UFS STACK · COMPONENT · VESPAR');
+ if(VS.complete&&VS.naturalWidth){const h=560,w=h*VS.naturalWidth/VS.naturalHeight,ww=Math.min(w,820);X.drawImage(VS,0,0,VS.naturalWidth*ww/w,VS.naturalHeight,80,140,ww,h);X.strokeStyle=G;X.strokeRect(80,140,ww,h)}
+ txt('VESPAR',1340,190,72,G,'center','Cinzel',700);txt('Cookie Tush SI · Gravity Search Lead · UFS / SEXA Math',1340,240,26,CY,'center','Inter',500);
+ txt('component of the stack: permutation + constraint search over the frozen gravity model',1340,280,20,'#b8c0d0','center','Inter',500);
+ const R2=[[32.5,'SIMULATED and COVERED · kept separate, never mixed',TX],[36.9,'Measured: 64,114,000,000,000 SIMULATED / day',G],[36.9,'Goal: 999,000,000,000,000,000,000 SIMULATED / day',CY],[46.5,'belt_gate_hexad (locked): 104,000,000 SIMULATED',G],[46.5,'belt_gate_hexad (locked): 312,000,000 COVERED',CY]];
+ R2.forEach(([s,l,c],i)=>{X.globalAlpha=a*ss(s,s+1,t);txt(l,960,350+i*52,30,c,'left','Inter',600)});
+ X.globalAlpha=a*ss(53.2,54.2,t);txt('6.75 / 19',1080,690,84,G,'center','Cinzel',700);txt('35.5% toward solving gravity',1500,675,34,CY,'center','Inter',700);
+ X.fillStyle='#1e2a44';X.fillRect(960,720,880,20);X.fillStyle=G;X.fillRect(960,720,880*.355*ss(53.5,56,t),20);
+ X.globalAlpha=a*ss(62,63,t);txt('NEEDS: belt-puncture telemetry  →  BepiColombo MOI 21 Nov 2026 · science telemetry April 2027',W/2,790,28,TX,'center','Inter',600);X.globalAlpha=1;
+ if(t<32.5)cap(['Vespar · Cookie Tush SI Gravity Search Lead for UFS & SEXA Math','permutation and constraint search over the frozen gravity model'],win(t,21.7,32.5));
+ else if(t<53.1)cap(['Witness board: SIMULATED and COVERED stay separate','~64 trillion 114 billion SIMULATED/day vs goal 999 quintillion/day'],win(t,32.5,53.1));
+ else if(t<62)cap(['Unified Field Systems: 35.5% of the way toward solving gravity','public scoreboard 6.75 / 19'],win(t,53.1,62));
+ else cap(['What Vespar needs next: belt-puncture telemetry','BepiColombo orbit insertion 21 Nov 2026 · science window April 2027'],win(t,62,76.5))}
+// Acts I–III (remapped legacy timeline)
+if(t>=75.5&&t<174){X.save();oldFrame(warp(t));X.restore();
+ if(t<77)X.globalAlpha=1}
+// definition (173–186.5)
+if(t>=172.5&&t<187.5){a=win(t,172.5,187.5,1);X.globalAlpha=a;tag('SEXA MATH · DEFINITION');txt('SEXA MATH',W/2,220,90,G,'center','Cinzel',700);X.strokeStyle=G;X.strokeRect(260,280,1400,330);wrap(DEF,W/2,355,42,1300,TX,'Georgia');X.globalAlpha=a*ss(178,179,t);txt('admissibility gate · admissible ✓',W/2,680,30,CY);X.globalAlpha=1;cap(['Belt-puncture telemetry as signal · quaternion → HEXAD · gravity as a solvable number system'],a)}
+// ACT IV scoreboard: intro (186.5–221) then 19 items one at a time
+if(t>=186&&t<356){a=win(t,186,356,1);X.globalAlpha=a;tag('ACT IV · CRITERIA FOR SOLVING GRAVITY · UFS PUBLIC SCOREBOARD');
+ let k=-1;for(let i=0;i<19;i++)if(t>=IT[i]-0.3)k=i;
+ const score=k<0||t>=IT[19]?6.75:SB.slice(0,k+1).reduce((s,x)=>s+SC(x[1]),0);
+ if(k<0||t>=IT[19]){txt('6.75 / 19',W/2,260,170,G,'center','Cinzel',700);txt('35.5% toward solving gravity · UFS in the lead',W/2,340,40,CY,'center','Inter',700);
+  X.fillStyle='#1e2a44';X.fillRect(460,380,1000,26);X.fillStyle=G;X.fillRect(460,380,1000*.355*ss(187,190,t),26);
+  if(t<IT[19]){X.globalAlpha=a*ss(203,204.5,t);wrap('These 19 items are the CRITERIA FOR SOLVING GRAVITY under this program: classical checks · wave & polarisation limits · pulsar tests · foundation rules that must be derived and verified.',W/2,490,38,1500,TX,'Georgia');
+   X.globalAlpha=a*ss(205,206,t);[['0','untested'],['0.25','input / assumed'],['0.5','by construction / fitted'],['0.75','derived, unverified'],['1','derived + verified'],['FAIL','best test fails']].forEach(([kk,m],i)=>{const x=260+i*240;txt(kk,x,720,30,kk=='0.5'?G:kk=='FAIL'?'#ff6b5b':CY,'center','Inter',700);txt(m,x,756,20,'#b8c0d0','center','Inter',500)});
+   X.globalAlpha=a*ss(215,216,t);txt('No credit above 0.5 earned yet · here they are, 1 → 19',W/2,840,30,G,'center','Inter',600)}
+  else{X.globalAlpha=a;txt('10 × 0.5  ·  7 × 0.25  ·  2 FAIL',W/2,500,48,TX,'center','Inter',700);X.globalAlpha=a*ss(349,350,t);txt('Climb: 1.25 → 6.75 · every audit raised failures rather than padding the score',W/2,580,32,CY,'center','Inter',600)}}
+ else{// one criterion at a time
+  const [n,c,m]=SB[k],p=ss(IT[k]-.3,IT[k]+.6,t),f=c=='FAIL';X.globalAlpha=a*p;
+  txt('CRITERION',W/2,170,30,'#8b95a8','center','Inter',600);txt(String(k+1)+' / 19',W/2,290,130,f?'#ff6b5b':G,'center','Cinzel',700);
+  txt(n,W/2,400,64,TX,'center','Georgia',600);
+  X.fillStyle='rgba(30,42,68,.7)';X.fillRect(260,450,1400,120);X.strokeStyle=CY;X.strokeRect(260,450,1400,120);txt(m,W/2,525,40,CY,'center','Georgia',500);
+  X.globalAlpha=a*ss(IT[k]+1.5,IT[k]+2.3,t);const bc=f?'#c0392b':c=='0.5'?G:'#2a3550';X.fillStyle=bc;X.fillRect(W/2-120,610,240,80);txt(f?'FAIL · 0':c,W/2,668,48,f||c=='0.25'?'#fff':'#0a1628','center','Inter',700);
+  txt(f?'best test fails':c=='0.5'?'by construction or fitted':'input or assumed',W/2,730,26,'#b8c0d0','center','Inter',500);X.globalAlpha=a;
+  if(k<10)txt('* recalled external limit / formula, unverified',W/2,780,18,'#6f7a90','center','Inter',500);
+  txt('running: '+score.toFixed(2)+' / 19',W-80,140,28,G,'right','Inter',700)}
+ // progress strip of 19
+ for(let i=0;i<19;i++){const x=W/2-19*44+i*88,c=SB[i][1],on=i<=k||t>=IT[19];X.globalAlpha=a*(on?1:.25);X.fillStyle=c=='FAIL'?'#c0392b':c=='0.5'?G:'#2a3550';X.fillRect(x,810+20,76,30);txt(String(i+1),x+38,852,18,c=='0.5'?'#0a1628':'#fff','center','Inter',700)}X.globalAlpha=1;
+ if(t<203)cap(['6.75 / 19 = 35.5% · Unified Field Systems is 35.5% of the way toward solving gravity','this fail-visible board puts UFS in the lead in advanced aerospace gravity R&E'],win(t,186.5,203));
+ else if(t<221)cap(['The 19 criteria for solving gravity — explained before they are listed','gold 0.5 · muted 0.25 · red FAIL · nothing above 0.5 yet'],win(t,203,221));
+ else if(t>=IT[19])cap(['Ten at 0.5 · seven at 0.25 · two FAIL','from 1.25 to 6.75 — audits raised failures rather than padding the score'],win(t,IT[19],356))}
+// closing: six belts + lead (355.5–376.7)
+if(t>=355&&t<377.5){a=win(t,355,377.5,1);X.globalAlpha=a;tag('UNIFIED FIELD SYSTEMS · VESPAR · HEXAD');txt('Six synthetic radiation belts',W/2,180,54,G,'center','Cinzel',700);planets(t,W/2-5*150,420,300,a,1.8);
+ X.globalAlpha=a;txt('6.75 / 19 · 35.5%',W/2,690,70,G,'center','Cinzel',700);txt('UFS — with Vespar as the gravity-search component — leads advanced aerospace gravity R&E',W/2,760,30,TX,'center','Inter',600);
+ cap(t<372.3?['A live board, failures visible.']:['Next step: derivation and verification — not more fitting.'],a);X.globalAlpha=1}
+// CTA
+if(t>=376.5){a=ss(376.5,377.5,t)*(1-ss(T-D-1,T-D,t));X.globalAlpha=a;txt('SEXA MATH',W/2,380,130,G,'center','Cinzel',700);txt("Don't throw out the data.",W/2,500,52,TX,'center','Georgia',500);txt('Read the paper · RICOLMC-DDF · doi.org/10.17605/OSF.IO/WNV67',W/2,580,32,CY,'center','Inter',500);txt('sexamath.si',W/2,660,48,G,'center','Inter',700);X.globalAlpha=1}
+}
+const D=10.54,RS=9.4,YS=25.9; // opener: definition → RICOLMC-DDF at RS → Yeshiva at YS; D = shift of all later acts
+function frame(t){bg(t);if(t<21.7+D){const a=win(t,0,21.7+D+.6,1.2);X.globalAlpha=a;txt('SEXA MATH',W/2,300,150,G,'center','Cinzel',700);txt('sexamath.si · Unified Field Systems LLC',W/2,370,30,CY,'center','Inter',500);
+ X.globalAlpha=a*ss(RS-.5,RS+.5,t);txt('RICOLMC-DDF',W/2,480,64,G,'center','Cinzel',700);
+ wrap('Recursive Interdomain Computational Omni-Logic embedding Monster–Moonshine Constrained Admissibility Manifold Completeness across Density, Dimension, Field, Liquidity, and Recursive Resource Completeness for Γ-Gated Resource Flows',W/2,560,36,1500,TX,'Georgia');
+ X.globalAlpha=a*ss(YS-.5,YS+.5,t);txt('SEXA Math was built November 17th 2024 at Yeshiva University Library.',W/2,800,40,G,'center','Inter',700);
+ X.globalAlpha=a*(1-ss(RS-1,RS,t));txt('“synthetic” — in its most textbook definition: Pure Mathematical Perfection',W/2,520,44,CY,'center','Georgia',500);X.globalAlpha=1;cap(['A synthetic, admissibility-gated algebraic calculus —','in its most textbook definition, “synthetic” means Pure Mathematical Perfection.'],a);return}
+ frameBody(t-D)}
+let t0=performance.now(),off=0,run=true;const sk=document.getElementById('sk'),tm=document.getElementById('tm');
+const vo=document.getElementById('vo');
+function syncVo(t){if(!vo)return;try{if(Math.abs((vo.currentTime||0)-t)>0.35)vo.currentTime=Math.min(t,vo.duration||t)}catch(e){}}
+function playVo(){if(!vo||location.hash.includes('capture'))return;const p=vo.play();if(p&&p.catch)p.catch(()=>{})}
+function pauseVo(){if(vo)vo.pause()}
+window.SEXA_SEEK=s=>{off=s;t0=performance.now();frame(s);syncVo(s)}; // for headless MP4 capture
+function loop(n){let t=run?off+(n-t0)/1000:off;if(t>T){t=0;off=0;t0=n;syncVo(0);if(run)playVo()}frame(t);sk.value=t;tm.textContent=Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0');if(!run)off=t;requestAnimationFrame(loop)}
+document.getElementById('pp').onclick=e=>{run=!run;if(run){t0=performance.now();syncVo(+sk.value);playVo()}else{off=+sk.value;pauseVo()}e.target.textContent=run?'Pause':'Play'};
+document.getElementById('rs').onclick=()=>{off=0;t0=performance.now();syncVo(0);if(run)playVo()};
+sk.oninput=()=>{off=+sk.value;t0=performance.now();syncVo(off)};
+document.getElementById('mu').onclick=e=>{if(!vo)return;vo.muted=!vo.muted;e.target.textContent=vo.muted?'Unmute':'Mute'};
+if(!location.hash.includes('capture')){requestAnimationFrame(loop);vo&&vo.addEventListener('canplay',()=>{if(run)playVo()},{once:true});playVo()}
+</script></body></html>
