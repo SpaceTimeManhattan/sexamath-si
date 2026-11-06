@@ -92,11 +92,51 @@ function applyFilter() {
   }
 }
 
+const EXPECTED = 100064313;
+const ov = document.getElementById('dload'), pctEl = document.getElementById('dpct'), barEl = document.getElementById('dbar'),
+  stEl = document.getElementById('dst'), etaEl = document.getElementById('deta');
+const MB = b => (b / 1048576).toFixed(1);
+let t0 = 0, samples = [];
+function progress(loaded, total, final) {
+  total = total || EXPECTED;
+  const pct = final ? 100 : Math.min(99, Math.floor(loaded / total * 100));
+  pctEl.textContent = pct + '%'; barEl.style.width = pct + '%';
+  stEl.textContent = MB(loaded) + ' MB / ' + MB(total) + ' MB';
+  const now = performance.now(); samples.push([now, loaded]);
+  while (samples.length > 2 && now - samples[0][0] > 5000) samples.shift();
+  const [ta, la] = samples[0], dt = (now - ta) / 1000;
+  if (final) { etaEl.textContent = 'Download complete. Preparing pages…'; return; }
+  if (dt > 0.8 && loaded > la) {
+    const bps = (loaded - la) / dt, left = Math.max(0, (total - loaded) / bps);
+    const mbps = (bps * 8 / 1e6).toFixed(1);
+    etaEl.textContent = (left < 60 ? 'about ' + Math.ceil(left) + ' s remaining' : 'about ' + Math.floor(left / 60) + ' min ' + Math.round(left % 60) + ' s remaining') + ' · ' + mbps + ' Mbps';
+  }
+}
+async function download() {
+  const res = await fetch(PDF_URL);
+  if (!res.ok || !res.body) throw new Error('HTTP ' + res.status);
+  const total = (!res.headers.get('content-encoding') && +res.headers.get('content-length')) || EXPECTED;
+  const reader = res.body.getReader(); let buf = new Uint8Array(total), loaded = 0, last = 0;
+  t0 = performance.now(); progress(0, total);
+  for (;;) {
+    const { done, value } = await reader.read(); if (done) break;
+    if (loaded + value.length > buf.length) { const nb = new Uint8Array(Math.max(buf.length * 1.5, loaded + value.length) | 0); nb.set(buf.subarray(0, loaded)); buf = nb; }
+    buf.set(value, loaded); loaded += value.length;
+    const t = performance.now(); if (t - last > 150) { last = t; progress(loaded, total); }
+  }
+  progress(loaded, loaded, true);
+  return buf.subarray(0, loaded);
+}
 async function init() {
   try {
     const pdfjs = await import('../pdfjs/pdf.min.mjs');
     pdfjs.GlobalWorkerOptions.workerSrc = new URL('../pdfjs/pdf.worker.min.mjs', import.meta.url).href;
-    pdf = await pdfjs.getDocument({ url: PDF_URL, disableAutoFetch: true, disableStream: true, rangeChunkSize: 262144 }).promise;
+    let src;
+    try { src = { data: await download() }; }
+    catch (e) { console.warn('stream download failed, falling back', e); src = { url: PDF_URL, disableRange: true }; }
+    const task = pdfjs.getDocument(src);
+    if (src.url) task.onProgress = ({ loaded, total }) => progress(loaded, total, total && loaded >= total);
+    pdf = await task.promise;
     N = pdf.numPages; tot.textContent = N; jump.max = N;
     const p1 = await pdf.getPage(1); const v = p1.getViewport({ scale: 1 }); ratio = v.height / v.width;
     msg.remove();
@@ -104,12 +144,14 @@ async function init() {
     for (let n = 1; n <= N; n++) { const d = document.createElement('div'); d.className = 'pgx'; d.innerHTML = '<span class="n">' + n + '</span>'; pages.push(d); frag.appendChild(d); }
     box.appendChild(frag); layout();
     const h = location.hash.match(/page=(\d+)/);
-    if (pendingJump) goto(pendingJump); else if (h) goto(+h[1]);
+    if (pendingJump) { const pj = pendingJump; pendingJump = 0; box.scrollTop = (pj - 1) * step(); } else if (h) goto(+h[1]);
     update(); syncToc(lastPage || 1);
+    ov.style.display = 'none';
     window.__dissReady = true;
   } catch (e) {
-    console.error(e); msg.innerHTML = 'The inline viewer could not load here. <a href="' + PDF_URL + '" target="_blank" rel="noopener">Open the full PDF</a>.';
+    console.error(e);
+    ov.querySelector('h3').textContent = 'The inline viewer could not load here.';
+    etaEl.innerHTML = '<a href="' + PDF_URL + '" target="_blank" rel="noopener">Open the full PDF</a> instead.';
   }
 }
-const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); init(); } }, { rootMargin: '600px' });
-io.observe(document.getElementById('diss'));
+init();

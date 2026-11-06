@@ -112,18 +112,24 @@ ol.ladder{list-style:none;counter-reset:s;padding:0}ol.ladder li{counter-increme
 .tocs .sub,.tocs .cnt{margin:.2rem .4rem .3rem 1.2rem;color:var(--mu);font-size:.72rem}.tocs .part>a{color:var(--cyan);font-weight:600}.tocs .ch>a,.tocs .ch>details>summary>a{font-weight:600}
 .tocs .s2,.tocs .s3{padding-left:.8rem;font-size:.76rem}.tocs .th>a{color:#f3d58a}.tocs .df>a{color:#b9c2d3;font-size:.75rem}
 .tocs.filt li{display:none}.tocs.filt li.hit{display:block}.tocs.filt .bk:not(.hit){display:none}
-.dview{border:1px solid var(--gold);border-radius:10px;overflow:hidden;background:#2a2f3a}
+.dview{position:relative;border:1px solid var(--gold);border-radius:10px;overflow:hidden;background:#2a2f3a}
 .dpages{height:calc(100vh - 4.4rem);overflow:auto;padding:10px;position:relative}
 .dpages .pgx{margin:0 auto 10px;background:#fff;position:relative;box-shadow:0 2px 10px #0008;overflow:hidden}.dpages canvas{display:block;width:100%;height:auto}
 .dpages .pgx .n{position:absolute;right:6px;bottom:4px;font:11px system-ui;color:#999}.dmsg{color:var(--tx);padding:2rem;text-align:center}
+.dload{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:2rem;background:radial-gradient(ellipse at center,#101a33ee 0,#06080df2 70%);text-align:center}
+.dload h3{margin:0;font-size:clamp(1.5rem,3.4vw,2.4rem);color:#fff}.dload .pct{font-family:Georgia,serif;font-size:clamp(3rem,9vw,5.5rem);line-height:1;color:var(--gold)}
+.dload .bar{width:min(560px,88%);height:14px;background:var(--line);border-radius:7px;overflow:hidden}.dload .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--gold));transition:width .2s}
+.dload .st{color:var(--tx);font-size:1rem}.dload .eta{color:var(--cyan);font-size:.95rem}.dload .mu a{color:var(--gold)}
+.dnote{margin:.2rem 0 1rem;padding:.8rem 1rem;border-left:3px solid var(--gold);background:#0d1220cc;color:var(--tx);font-size:.9rem;border-radius:4px}
 @media(max-width:900px){.diss{width:auto;margin-left:0;grid-template-columns:1fr}.dtoc{position:relative;top:0;height:46vh}.dpages{height:78vh}}
 </style>
 <p class="mu">Jered McClain · 14 books · 6,215 pages · 136 chapters · 3,542 sections · 449 theorems. The table of contents on the left follows the page you are reading; click any entry to jump.</p>
+<p class="dnote"><b>Note:</b> This preview contains all 14 books (6,215 pages, about 95 MB), so it takes time to fully load. Estimated load time: about 10–20 seconds on fast broadband (100+ Mbps), about 30 seconds to 1½ minutes on typical home Wi‑Fi (10–25 Mbps), and 3–5+ minutes on mobile data (around 4 Mbps or less). Times vary by internet speed and device.</p>
 <div class="diss" id="diss">
 <aside class="dtoc" aria-label="Dissertation table of contents">
 <div class="dhead"><input type="search" id="dfilter" placeholder="Search chapters, sections, theorems…" aria-label="Filter table of contents">
 <div class="dpg">Page <b id="dcur">1</b> / <span id="dtot">6215</span><input type="number" id="djump" min="1" max="6215" placeholder="Go to" aria-label="Jump to page"><button id="dgo" type="button">Go</button><a href="assets/pdf/McClain_Dissertation_Books_I-XIV.pdf" target="_blank" rel="noopener">Open full PDF</a></div></div>
-<nav class="tocs" id="dtocs">
+<div class="tocs" id="dtocs" role="navigation" aria-label="Dissertation contents">
 <details class="bk" data-book="1"><summary><a href="assets/pdf/McClain_Dissertation_Books_I-XIV.pdf#page=1" target="dissframe" data-p="1" class="bkl"><b>Book I</b> — Foundations of Recursive Admissibility<span class="pg">1</span></a></summary>
 <p class="sub">Volume I of CCT/SEXA: The Architecture of Recursive Admissibility</p>
 <p class="cnt">pp. 1–150 · 10 chapters · 45 sections · 4 theorems</p><ul class="lv0">
@@ -4338,8 +4344,8 @@ ol.ladder{list-style:none;counter-reset:s;padding:0}ol.ladder li{counter-increme
 <li class="part"><a href="assets/pdf/McClain_Dissertation_Books_I-XIV.pdf#page=5864" target="dissframe" data-p="5864">Part 2<span class="pg">5864</span></a></li>
 <li class="part"><a href="assets/pdf/McClain_Dissertation_Books_I-XIV.pdf#page=5864" target="dissframe" data-p="5864">Part 3<span class="pg">5864</span></a></li>
 </ul></details>
-</nav></aside>
-<div class="dview"><div class="dpages" id="dpages"><div class="dmsg" id="dmsg">Loading the 6,215-page dissertation viewer… <a href="assets/pdf/McClain_Dissertation_Books_I-XIV.pdf" target="_blank" rel="noopener">Open the full PDF</a> instead.</div></div></div>
+</div></aside>
+<div class="dview"><div class="dload" id="dload" role="status" aria-live="polite"><h3>Loading dissertation…</h3><div class="pct" id="dpct">0%</div><div class="bar"><i id="dbar"></i></div><div class="st" id="dst">0 MB / 95 MB</div><div class="eta" id="deta">Measuring download speed…</div><p class="mu">You can browse the table of contents while it loads. Clicking an entry will open that page when loading finishes. Or <a href="assets/pdf/McClain_Dissertation_Books_I-XIV.pdf" target="_blank" rel="noopener">open the full PDF</a>.</p></div><div class="dpages" id="dpages"><div class="dmsg" id="dmsg"></div></div></div>
 </div>
 <p style="text-align:center"><a class="btn p" href="assets/pdf/McClain_Dissertation_Books_I-XIV.pdf" target="_blank" rel="noopener">Open full PDF (95 MB)</a></p>
 <script type="module" src="assets/js/dissviewer.js"></script>
