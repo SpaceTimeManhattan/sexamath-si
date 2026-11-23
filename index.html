@@ -35,11 +35,14 @@ nav b{margin-right:auto;letter-spacing:.14em}
 .hero{padding:1rem 0 1.25rem}
 .hero video{width:100%;max-width:100%;height:auto;object-fit:contain;background:#06080d}
 }
+
+.hero video.hero-logo{display:block;width:100%;max-width:760px;height:auto;aspect-ratio:16/9;object-fit:contain;margin:0 auto;border-radius:8px;background:#06080d;position:relative;z-index:0}
+@media(prefers-reduced-motion:reduce){#witness .tick span{animation:none;padding-left:0}}
 </style></head><body>
 <nav><b><img src="assets/logo/sexamath-v6-emblem-36.png?v=6" alt="">SEXAMATH</b><input type="checkbox" id="nav-cb" class="nav-cb" aria-hidden="true"><label for="nav-cb" class="nav-toggle" aria-label="Menu"><span></span></label><div class="nav-links"><a href="#synthetic">Synthetic</a><a href="#hexad">HEXAD</a><a href="#backdrop">RICOLMC-DDF</a><a href="#ladder">Progression</a><a href="#scoreboard">Scoreboard</a><a href="#bepi">BepiColombo</a><a href="#craft">Craft</a><a href="#trash-telemetry">Trash Telemetry</a><a href="#paradox">Paradox</a><a href="#video">Video</a><a href="#advisor">Advisor</a><a href="#dissertation">Dissertation</a><a href="#witness">Witness</a><a href="#paper">Paper</a><a href="animation.html" style="color:var(--gold)">Animation</a></div></nav>
 <header class="hero wrap">
 <p class="mu" style="letter-spacing:.3em;text-transform:uppercase">Unified Field Systems LLC</p>
-<h1 class="mark" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">SEXAMATH.si</h1><video loop muted playsinline autoplay poster="assets/logo/sexamath-9cube-v6-clean-eo14434-logo-tm-navygold.png?v=8" aria-label="SEXAMATH.si nine-cube logo" style="width:100%;max-width:760px;height:auto;object-fit:contain;display:block;margin:0 auto;background:#06080d"><source src="assets/logo/sexamath-9cube-v6-clean-eo14434-animated-lockup-navygold.mp4?v=8" type="video/mp4"><source src="assets/logo/sexamath-9cube-v6-clean-eo14434-animated-lockup-navygold.webm?v=8" type="video/webm"></video><p class="hilbert-line" style="margin:.4rem auto 0;max-width:760px;text-align:center;font-style:italic;font-weight:600;color:#fff;font-size:1.05rem">Formalized in Hilbert space: admissibility gates as orthogonal projections, verified in a 2880-dimensional model.</p>
+<h1 class="mark" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">SEXAMATH.si</h1><video id="hero-logo" class="hero-logo" autoplay loop muted playsinline preload="auto" width="1920" height="1080" poster="assets/logo/sexamath-9cube-v6-clean-eo14434-animated-lockup-poster.jpg?v=9" aria-label="SEXAMATH.si nine-cube logo"><source src="assets/logo/sexamath-9cube-v6-clean-eo14434-animated-lockup.mp4?v=9" type="video/mp4"><source src="assets/logo/sexamath-9cube-v6-clean-eo14434-animated-lockup.webm?v=9" type="video/webm"></video><p class="hilbert-line" style="margin:.4rem auto 0;max-width:760px;text-align:center;font-style:italic;font-weight:600;color:#fff;font-size:1.05rem">Formalized in Hilbert space: admissibility gates as orthogonal projections, verified in a 2880-dimensional model.</p>
 <div class="def"><strong>SEXA Math:</strong> a synthetic, admissibility-gated algebraic calculus that treats radiation-belt puncture telemetry — before, during, and after — as signal, upgrades quaternion sensing to HEXAD, and turns artificial gravity into a solvable number system.</div>
 <div style="margin-top:1.2rem"><a class="btn" href="#video">&#9654; Watch</a><a class="btn p" href="https://osf.io/wnv67/files/n8z4r" target="_blank" rel="noopener">Download RICOLMC-DDF (<img class="osf-mark" src="assets/osf/osf-logo.png" alt="OSF" style="height:1.2em;width:auto;vertical-align:-.25em;margin:0 .25em 0 .1em;display:inline">OSF)</a><a class="btn" href="https://doi.org/10.17605/OSF.IO/WNV67">DOI 10.17605/OSF.IO/WNV67</a></div>
 </header>
@@ -677,7 +680,7 @@ $("w-ksexa").textContent=k.toLocaleString("en-US");$("w-n").textContent=n.toFixe
 $("w-ksr").textContent=ticks(START_SR).toLocaleString("en-US")+" ticks";$("w-kgr").textContent=ticks(START_GR).toLocaleString("en-US")+" ticks";
 $("w-srage").textContent="Running from 30 June 1905 \u00b7 "+civil(START_SR);$("w-grage").textContent="Running from 25 November 1915 \u00b7 "+civil(START_GR);
 var km=ticks(MS0);ui.forEach(function(u){var L=u.f(k,n,orbit(k),km,u.p);u.a.textContent=fmt(L[0][1]);u.b.textContent=fmt(L[1][1]);u.c.textContent=fmt(L[2][1]);});}
-paint();setInterval(paint,80);
+var wOn=true,wSec=document.getElementById("witness");if(wSec&&"IntersectionObserver"in window){new IntersectionObserver(function(es){wOn=es[0].isIntersecting;},{rootMargin:"200px"}).observe(wSec);}function wLive(){return wOn&&!document.hidden;}paint();setInterval(function(){if(wLive())paint();},80);
 var W="https://sexa-fin-collector2.spacetimemanhattan.workers.dev/";
 function set(id,v){var e=$(id);if(e)e.textContent=(v==null||v==="")?"\u2026":String(v);}
 function draw(d){var seed=Number(d.seed_held||110),live=Number(d.live_rejected||0),acc=Number(d.live_accepted||0);FIN.acc=acc;FIN.rej=live;FIN.last=d.last_kill||null;
@@ -689,7 +692,7 @@ var note=$("w-killnote");if(!d.collector||d.collector==="NO_KV"||d.collector==="
 else note.textContent="COLLECTOR ON \u00b7 seed 110 in-sample + "+live.toLocaleString("en-US")+" live kills/rejects \u00b7 E_fin NOT_EVALUATED";}
 function pull(){fetch(W,{cache:"no-store"}).then(function(r){return r.json();}).then(draw).catch(function(){set("w-killnote","WORKER UNREACHABLE \u00b7 seed 110 held");set("w-hb","NO_COLLECTOR");});}
 pull();setInterval(pull,30000);
-var t=document.querySelectorAll("#witness .w-vgt"),ti=0;setInterval(function(){t.forEach(function(e,k){e.style.background=k==ti?"#e8c15a":"";e.style.color=k==ti?"#000":"";e.style.borderRadius="3px";});ti=(ti+1)%t.length;},90);
+var t=document.querySelectorAll("#witness .w-vgt"),ti=0;setInterval(function(){if(!wLive())return;t.forEach(function(e,k){e.style.background=k==ti?"#e8c15a":"";e.style.color=k==ti?"#000":"";e.style.borderRadius="3px";});ti=(ti+1)%t.length;},90);
 function f(x){return x==null?"not measured (kept separate)":Number(x).toExponential(3);}
 fetch("https://witness.unifiedfieldsystems.com/vespar_live_snapshot.json?t="+Date.now()).then(function(r){return r.json();}).then(function(j){
 $("w-vg-time").textContent=j.time_et;$("w-vg-sim").textContent=Number(j.SIMULATED).toLocaleString();$("w-vg-cov").textContent=f(j.COVERED);$("w-vg-rate").textContent=f(j.simulated_per_sec);$("w-vg-day").textContent=f(j.simulated_per_day_at_this_rate);$("w-vg-frac").textContent=f(j.fraction_of_goal);$("w-vg-verdict").textContent=j.verdict;$("w-vg-score").textContent=j.scoreboard;if(j.label)$("w-vg-label").textContent=j.label;
@@ -2037,7 +2040,7 @@ var t0=performance.now(),el=$("w-vg-tick"),el2=$("w-vg-roll");(function k(){var 
 /*viewport-video-play*/
 (function(){
   var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var vids=document.querySelectorAll("video");
+  var vids=document.querySelectorAll("video");if(reduce){vids.forEach(function(v){v.removeAttribute("autoplay");v.pause();});}
   function go(v){if(reduce)return;var p=v.play();if(p&&p.catch)p.catch(function(){});}
   if("IntersectionObserver"in window){
     var io=new IntersectionObserver(function(es){
