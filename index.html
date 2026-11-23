@@ -17,11 +17,29 @@ ol.ladder{list-style:none;counter-reset:s;padding:0}ol.ladder li{counter-increme
 .score{font-family:Georgia,serif;font-size:2.6rem;color:var(--gold)}.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;width:35.5%;background:linear-gradient(90deg,var(--cyan),var(--gold))}
 .mu{color:var(--mu);font-size:.9rem}.paradox{border-left:4px solid var(--gold)}code{color:var(--cyan)}footer{padding:3rem 0;text-align:center}
 .tw{overflow-x:auto;margin:1rem 0}table.sb{width:100%;border-collapse:collapse;font-size:.9rem;min-width:520px}table.sb th,table.sb td{border-bottom:1px solid var(--line);padding:.5rem .6rem;text-align:left}table.sb th{color:var(--cyan);font-weight:600}.bd{display:inline-block;min-width:3.2em;text-align:center;border-radius:4px;padding:.1em .4em;font-weight:700}.c05 .bd{background:var(--gold);color:#06080d}.c025 .bd{background:#2a3550;color:#d9dee8}.cFAIL .bd{background:#c0392b;color:#fff}.cFAIL td{color:#ff9a8f}
+
+.nav-cb,.nav-toggle{display:none}
+.nav-links{display:contents}
+@media(max-width:760px){
+nav{flex-wrap:wrap;align-items:center;gap:.55rem;padding:.5rem .85rem}
+nav b{margin-right:auto;letter-spacing:.14em}
+.nav-toggle{display:flex;align-items:center;justify-content:center;width:2.4rem;height:2.15rem;margin:0;border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer;flex:none}
+.nav-toggle span{display:block;width:1.05rem;height:2px;background:var(--gold);border-radius:1px;position:relative}
+.nav-toggle span:before,.nav-toggle span:after{content:"";position:absolute;left:0;width:1.05rem;height:2px;background:var(--gold);border-radius:1px}
+.nav-toggle span:before{top:-5px}
+.nav-toggle span:after{top:5px}
+.nav-cb{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.nav-links{display:none;flex-basis:100%;flex-direction:column;flex-wrap:nowrap;gap:0;padding:.2rem 0 .45rem;align-items:stretch;border-top:1px solid var(--line);margin-top:.1rem}
+.nav-links a{display:block;padding:.45rem 0;white-space:nowrap}
+.nav-cb:checked ~ .nav-links{display:flex}
+.hero{padding:1rem 0 1.25rem}
+.hero video{width:100%;max-width:100%;height:auto;object-fit:contain;background:#06080d}
+}
 </style></head><body>
-<nav><b><img src="assets/logo/sexamath-v6-emblem-36.png?v=6" alt="">SEXAMATH</b><a href="#synthetic">Synthetic</a><a href="#hexad">HEXAD</a><a href="#backdrop">RICOLMC-DDF</a><a href="#ladder">Progression</a><a href="#scoreboard">Scoreboard</a><a href="#bepi">BepiColombo</a><a href="#craft">Craft</a><a href="#trash-telemetry">Trash Telemetry</a><a href="#paradox">Paradox</a><a href="#video">Video</a><a href="#advisor">Advisor</a><a href="#dissertation">Dissertation</a><a href="#witness">Witness</a><a href="#paper">Paper</a><a href="animation.html" style="color:var(--gold)">Animation</a></nav>
+<nav><b><img src="assets/logo/sexamath-v6-emblem-36.png?v=6" alt="">SEXAMATH</b><input type="checkbox" id="nav-cb" class="nav-cb" aria-hidden="true"><label for="nav-cb" class="nav-toggle" aria-label="Menu"><span></span></label><div class="nav-links"><a href="#synthetic">Synthetic</a><a href="#hexad">HEXAD</a><a href="#backdrop">RICOLMC-DDF</a><a href="#ladder">Progression</a><a href="#scoreboard">Scoreboard</a><a href="#bepi">BepiColombo</a><a href="#craft">Craft</a><a href="#trash-telemetry">Trash Telemetry</a><a href="#paradox">Paradox</a><a href="#video">Video</a><a href="#advisor">Advisor</a><a href="#dissertation">Dissertation</a><a href="#witness">Witness</a><a href="#paper">Paper</a><a href="animation.html" style="color:var(--gold)">Animation</a></div></nav>
 <header class="hero wrap">
 <p class="mu" style="letter-spacing:.3em;text-transform:uppercase">Unified Field Systems LLC</p>
-<h1 class="mark" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">SEXAMATH.si</h1><video loop muted playsinline poster="assets/logo/sexamath-9cube-v6-clean-eo14434-logo-tm-transparent.png?v=7" aria-label="SEXAMATH.si nine-cube logo" style="width:100%;max-width:760px;height:auto;display:block;margin:0 auto;background:transparent"><source src="assets/logo/sexamath-9cube-v6-clean-eo14434-animated-lockup-transparent.webm?v=7" type="video/webm"><source src="assets/logo/sexamath-9cube-v6-clean-eo14434-animated-lockup-nostars.mp4?v=7" type="video/mp4"></video><p class="hilbert-line" style="margin:.4rem auto 0;max-width:760px;text-align:center;font-style:italic;font-weight:600;color:#fff;font-size:1.05rem">Formalized in Hilbert space: admissibility gates as orthogonal projections, verified in a 2880-dimensional model.</p>
+<h1 class="mark" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">SEXAMATH.si</h1><video loop muted playsinline autoplay poster="assets/logo/sexamath-9cube-v6-clean-eo14434-logo-tm-navygold.png?v=8" aria-label="SEXAMATH.si nine-cube logo" style="width:100%;max-width:760px;height:auto;object-fit:contain;display:block;margin:0 auto;background:#06080d"><source src="assets/logo/sexamath-9cube-v6-clean-eo14434-animated-lockup-navygold.mp4?v=8" type="video/mp4"><source src="assets/logo/sexamath-9cube-v6-clean-eo14434-animated-lockup-navygold.webm?v=8" type="video/webm"></video><p class="hilbert-line" style="margin:.4rem auto 0;max-width:760px;text-align:center;font-style:italic;font-weight:600;color:#fff;font-size:1.05rem">Formalized in Hilbert space: admissibility gates as orthogonal projections, verified in a 2880-dimensional model.</p>
 <div class="def"><strong>SEXA Math:</strong> a synthetic, admissibility-gated algebraic calculus that treats radiation-belt puncture telemetry — before, during, and after — as signal, upgrades quaternion sensing to HEXAD, and turns artificial gravity into a solvable number system.</div>
 <div style="margin-top:1.2rem"><a class="btn" href="#video">&#9654; Watch</a><a class="btn p" href="https://osf.io/wnv67/files/n8z4r" target="_blank" rel="noopener">Download RICOLMC-DDF (<img class="osf-mark" src="assets/osf/osf-logo.png" alt="OSF" style="height:1.2em;width:auto;vertical-align:-.25em;margin:0 .25em 0 .1em;display:inline">OSF)</a><a class="btn" href="https://doi.org/10.17605/OSF.IO/WNV67">DOI 10.17605/OSF.IO/WNV67</a></div>
 </header>
